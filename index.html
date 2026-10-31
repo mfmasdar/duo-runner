@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e1330">
-<title>DUO RUN v2 — Motion Party Runner</title>
+<title>DUO RUN v2.1 — Camera Fix</title>
 <style>
 :root{
   color-scheme:dark;
@@ -60,7 +60,7 @@ footer{max-width:1200px;margin:0 auto;padding:0 14px 16px;color:#b0c2e7;font-siz
 <header>
   <div class="wrap hero">
     <div>
-      <h1>🌟 DUO RUN v2</h1>
+      <h1>🌟 DUO RUN v2.1</h1>
       <div class="sub">Two-player motion runner for Safari • MediaPipe Pose • bright original console-style world</div>
     </div>
     <div class="controls">
@@ -131,8 +131,9 @@ footer{max-width:1200px;margin:0 auto;padding:0 14px 16px;color:#b0c2e7;font-siz
   DUO RUN v2 • single-file prototype • Safari on iPad mini 7 • MediaPipe Pose Landmarker (2 poses)
 </footer>
 
-<script type="module">
-import { PoseLandmarker, FilesetResolver } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm';
+<script>
+// Load MediaPipe only after the user clicks Enable camera. The game remains functional if the CDN fails.
+let PoseLandmarker, FilesetResolver;
 
 const $ = id => document.getElementById(id);
 const game = $('game');
@@ -195,7 +196,7 @@ function resetGame(){
   worldTimer = 0;
   sparkles = [];
   players = [makePlayer(0), makePlayer(1)];
-  $('startButton').disabled = !landmarker;
+  $('startButton').disabled = false;
   $('startButton').textContent = '2. Start race';
   setStatus('Race reset. Enable the camera, or use the manual test buttons to validate the gameplay.');
 }
@@ -258,7 +259,12 @@ $('cameraButton').onclick = async () => {
     video.srcObject = stream;
     await video.play();
 
-    setStatus('Loading MediaPipe pose model…');
+    setStatus('Camera opened. Loading MediaPipe JavaScript from CDN…');
+    const sdk = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm');
+    PoseLandmarker = sdk.PoseLandmarker;
+    FilesetResolver = sdk.FilesetResolver;
+    if(!PoseLandmarker || !FilesetResolver) throw new Error('MediaPipe package loaded without required exports');
+    setStatus('MediaPipe library ready. Downloading pose model…');
     const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');
     try {
       landmarker = await PoseLandmarker.createFromOptions(vision, {
@@ -285,8 +291,9 @@ $('cameraButton').onclick = async () => {
     setStatus('Camera ready. Ask both players to stand in frame and tap Start race.');
   } catch(err){
     console.error(err);
-    setStatus('Camera/model error: ' + err.message + '. Use an HTTPS site and grant Safari camera permission. Manual test controls still work.');
+    setStatus('Camera/model error: ' + (err?.name || 'Error') + ': ' + err.message + '. The page is running; verify CDN access and reload. Manual controls remain usable.');
     btn.disabled = false;
+    btn.textContent = 'Retry camera';
   }
 };
 
@@ -426,7 +433,7 @@ function updateGame(dt, now){
     const winner = players[0].score === players[1].score ? 'It is a tie!' : `${players[0].score > players[1].score ? players[0].name : players[1].name} wins!`;
     setStatus(`Time! ${winner} Final score — P1: ${players[0].score} • P2: ${players[1].score}. Tap Reset to play again.`);
     $('startButton').textContent = '2. Start race';
-    $('startButton').disabled = !landmarker;
+    $('startButton').disabled = false;
   }
 }
 
@@ -869,7 +876,7 @@ function loop(now){
 
 document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
 $('startButton').disabled = false; // allow manual testing without camera
-setStatus('Ready. You can use the manual test buttons right away, or enable the front camera for motion control.');
+setStatus('JavaScript initialized ✓ — tap Enable camera. If it fails, the error will be shown here.');
 requestAnimationFrame(loop);
 </script>
 </body>
