@@ -1,19 +1,19 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101937"><title>DUO RUN v3 — Virtual Green Screen</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101937"><title>DUO RUN v3.1 — Safari Camera Fix</title><style>
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff;background:#101937}*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#152a59,#0c1029 70%);min-height:100vh}header{padding:15px 17px;background:#101832;border-bottom:1px solid #405481}h1{font-size:24px;margin:0 0 5px}small,.help{color:#bfcce7}.wrap{max-width:1150px;margin:auto;padding:14px}.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.panel{padding:14px;background:#17234b;border:1px solid #394e88;border-radius:16px;margin-bottom:12px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-size:13px;font-weight:700;margin:7px 0}input[type=text],input[type=url],input[type=number]{width:100%;background:#0d1734;border:1px solid #51679d;color:white;border-radius:9px;padding:12px;font-size:15px}input[type=range]{width:100%;accent-color:#5ce3d1}button{border:0;border-radius:10px;padding:11px 15px;background:#62ebe0;color:#10212d;font-size:14px;font-weight:800;cursor:pointer;touch-action:manipulation}button.secondary{background:#344b83;color:#f5f8ff}button:disabled{opacity:.5}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.status{background:#0b1630;border:1px solid #435b9f;border-radius:11px;padding:12px;color:#d5e8ff;min-height:48px;margin:10px 0}.stage{position:relative;aspect-ratio:16/9;width:100%;background:#192953;overflow:hidden;border:2px solid #6984c8;border-radius:16px;isolation:isolate}.stage canvas#background,.stage iframe,.stage video#localVideo,.stage canvas#person{position:absolute;inset:0;width:100%;height:100%}#background{z-index:0}#youtube{z-index:1;border:0;display:none}#localVideo{z-index:1;display:none;object-fit:contain;background:#000}#person{z-index:2;pointer-events:none}#stageHint{position:absolute;z-index:3;bottom:9px;left:10px;background:#091630bb;padding:5px 9px;border-radius:8px;font-size:12px;pointer-events:none}.preview{position:relative;background:#090f23;border-radius:12px;overflow:hidden;aspect-ratio:4/3;max-width:250px}.preview video{width:100%;height:100%;object-fit:contain;transform:scaleX(-1)}.hint{font-size:12px;color:#c4d3ed;line-height:1.5}ul{padding-left:20px}li{margin:6px 0}.row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:7px;font-size:13px}.check input{accent-color:#52dfc7}#diagnostics{font-family:ui-monospace,Menlo,monospace;font-size:12px;white-space:pre-wrap;color:#a6e8d8}.pill{display:inline-block;padding:4px 9px;border-radius:99px;background:#253a72;font-size:12px}footer{font-size:12px;color:#afbfdf;padding:4px 0 25px}@media(max-width:750px){.controls{grid-template-columns:1fr}.wrap{padding:9px}.stage{border-radius:9px}h1{font-size:21px}}</style></head>
-<body><header><div style="max-width:1150px;margin:auto"><h1>🏃 DUO RUN v3 · YOU ARE IN THE VIDEO</h1><small>One participant · iPad front camera · AI background removal · YouTube or local video</small></div></header>
+<body><header><div style="max-width:1150px;margin:auto"><h1>🏃 DUO RUN v3.1 · YOU ARE IN THE VIDEO</h1><small>One participant · iPad front camera · AI background removal · YouTube or local video</small></div></header>
 <main class="wrap">
  <section class="panel"><label for="url">1. Paste a YouTube video link</label><input id="url" type="url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID" autocapitalize="off" spellcheck="false"><div class="buttons"><button id="loadYoutube">Load YouTube video</button><button id="demo" class="secondary">Use animated demo background</button></div><label for="file">Or select a video file stored on your iPad (MP4/MOV)</label><input id="file" type="file" accept="video/*" style="max-width:100%"><p class="hint">On YouTube, press Play directly in the embedded player after loading it. Not every YouTube video allows embedding. To keep your cutout visible, don't use the video's fullscreen button.</p></section>
  <section class="panel"><div class="buttons"><button id="enable">2. Enable camera + green screen</button><button id="stop" class="secondary" disabled>Stop camera</button></div><div id="status" class="status" role="status">App ready. Load a video or demo, then tap Enable camera + green screen.</div>
  <div class="stage" id="stage"><canvas id="background" width="960" height="540"></canvas><iframe id="youtube" title="YouTube running video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen playsinline></iframe><video id="localVideo" playsinline controls></video><canvas id="person" width="960" height="540" aria-label="Transparent green-screen overlay"></canvas><div id="stageHint">Your live cutout appears here</div></div></section>
  <div class="controls"><section class="panel"><h2 style="margin:0 0 8px">3. Place yourself in the scene</h2><label for="size">Person size: <span id="sizeVal">85%</span></label><input type="range" id="size" min="30" max="180" value="85"><label for="x">Horizontal position: <span id="xVal">50%</span></label><input type="range" id="x" min="0" max="100" value="50"><label for="y">Vertical position: <span id="yVal">94%</span></label><input type="range" id="y" min="30" max="115" value="94"><label for="edge">Mask threshold: <span id="edgeVal">35%</span></label><input type="range" id="edge" min="10" max="85" value="35"><label class="check"><input type="checkbox" id="mirror" checked> Mirror my image</label><div class="buttons"><button class="secondary" id="reset">Reset position</button></div><p class="hint">Stand far enough back for your full body to fit in the camera frame. A clear, uncluttered background improves the result.</p></section>
- <section class="panel"><h2 style="margin:0 0 8px">Camera monitor</h2><div class="row"><div class="preview"><video id="camera" autoplay muted playsinline></video></div><div><span class="pill" id="tracking">Camera OFF</span><p class="hint">Preview shows the original camera view. The large display shows only your extracted body.</p></div></div><h3>Diagnostics</h3><div id="diagnostics">JavaScript loaded successfully.</div><p class="hint">The green-screen effect uses MediaPipe's Selfie Segmenter. It processes your camera video in Safari without transmitting the camera feed to this website's server.</p></section></div>
+ <section class="panel"><h2 style="margin:0 0 8px">Camera monitor</h2><div class="row"><div class="preview"><video id="camera" autoplay muted playsinline></video></div><div><span class="pill" id="tracking">Camera OFF</span><p class="hint">Preview shows the original camera view. The large display shows only your extracted body.</p></div></div><h3>Diagnostics</h3><div id="diagnostics">JavaScript loaded successfully.</div><p class="hint">The green-screen effect uses MediaPipe Selfie Segmentation (classic JavaScript build, no ES module import). It processes your camera video in Safari without transmitting the camera feed to this website's server.</p></section></div>
  <section class="panel"><h2 style="margin:0 0 8px">How to use</h2><ul><li>Host this file as <code>index.html</code> on GitHub Pages, using HTTPS.</li><li>Open the site in Safari on iPad, paste an embeddable YouTube video and tap Load YouTube video.</li><li>Tap Enable camera + green screen and approve the camera permission if Safari asks.</li><li>Use the sliders to place your live body over the video. Run, jump or gesture along with the video; v3 is a visual overlay, not motion-driven video playback.</li><li>If a YouTube video blocks embedding, choose another or use the local video option.</li></ul></section>
  <footer>DUO RUN v3 · Original overlay interface · MediaPipe Selfie Segmenter. YouTube playback remains in YouTube's embedded player.</footer>
 </main>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const S={stream:null,segmenter:null,ready:false,working:false,latestVideoTime:-1,lastInfer:0,frames:0,elapsed:0,source:'demo',objectUrl:null};
+const S={stream:null,segmenter:null,ready:false,working:false,busy:false,latestVideoTime:-1,lastInfer:0,frames:0,elapsed:0,source:'demo',objectUrl:null,stage:'idle',cdn:''};
 const person=$('person'),pctx=person.getContext('2d');
 const video=$('camera');
 const cut=document.createElement('canvas');cut.width=320;cut.height=240;const cutCtx=cut.getContext('2d',{willReadFrequently:true});
@@ -29,13 +29,117 @@ $('file').onchange=e=>{const f=e.target.files?.[0];if(!f)return;if(S.objectUrl)U
 for(const id of ['size','x','y','edge'])$(id).oninput=()=>{$(id+'Val').textContent=$(id).value+'%';drawPerson();};
 $('mirror').onchange=drawPerson;
 $('reset').onclick=()=>{for(const [id,val] of Object.entries({size:85,x:50,y:94,edge:35})){$(id).value=val;$(id+'Val').textContent=val+'%';} $('mirror').checked=true;drawPerson();};
-async function stop(){S.working=false;S.ready=false;S.segmenter?.close();S.segmenter=null;S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;video.srcObject=null;pctx.clearRect(0,0,960,540);$('tracking').textContent='Camera OFF';$('enable').disabled=false;$('enable').textContent='2. Enable camera + green screen';$('stop').disabled=true;status('Camera stopped.');}
+
+async function stop(){
+ S.working=false;S.ready=false;S.busy=false;
+ try{await S.segmenter?.close();}catch(e){console.warn(e);}
+ S.segmenter=null;S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;
+ video.srcObject=null;pctx.clearRect(0,0,960,540);
+ $('tracking').textContent='Camera OFF';$('enable').disabled=false;
+ $('enable').textContent='2. Enable camera + green screen';
+ $('stop').disabled=true;status('Camera stopped.');
+}
 $('stop').onclick=stop;
-$('enable').onclick=async()=>{const button=$('enable');button.disabled=true;try{if(!navigator.mediaDevices?.getUserMedia)throw Error('Camera API unavailable: open the published HTTPS GitHub Pages site in Safari.');status('Opening front camera…');const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'user',width:{ideal:640},height:{ideal:480},frameRate:{ideal:20,max:30}}});S.stream=stream;video.srcObject=stream;await video.play();$('tracking').textContent='Camera ON · loading AI';status('Camera opened. Loading MediaPipe segmentation library…');const sdk=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm');const vision=await sdk.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');status('Loading selfie segmentation model…');const opts={baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite',delegate:'GPU'},runningMode:'VIDEO',outputCategoryMask:false,outputConfidenceMasks:true};try{S.segmenter=await sdk.ImageSegmenter.createFromOptions(vision,opts);}catch(e){status('GPU unavailable. Retrying on CPU…');opts.baseOptions.delegate='CPU';S.segmenter=await sdk.ImageSegmenter.createFromOptions(vision,opts);}S.ready=true;S.working=true;S.latestVideoTime=-1;S.frames=0;S.lastInfer=0;$('tracking').textContent='Green screen ACTIVE';$('stop').disabled=false;button.textContent='Camera active';status('Green screen active! Adjust person size and position.');}catch(err){console.error(err);S.ready=false;S.working=false;S.segmenter?.close();S.segmenter=null;S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;video.srcObject=null;button.disabled=false;$('tracking').textContent='Camera error';status('ERROR '+(err.name||'')+': '+err.message+' — Check HTTPS, Safari camera permission, and internet access to the MediaPipe CDN.');}};
-// Produce alpha cutout by using confidence mask #1 (person) on a camera frame.
-// Mask pixels and model input have the same source aspect ratio. Segmentation inference is throttled for iPad Safari.
-function segment(now){if(!S.ready||!S.segmenter||video.readyState<2||video.videoWidth===0)return;if(now-S.lastInfer<105||video.currentTime===S.latestVideoTime)return;S.lastInfer=now;S.latestVideoTime=video.currentTime;try{S.segmenter.segmentForVideo(video,now,result=>{try{const mask=result.confidenceMasks?.[1];if(!mask)return;const w=mask.width,h=mask.height;const data=mask.getAsFloat32Array();if(maskCanvas.width!==w||maskCanvas.height!==h){maskCanvas.width=w;maskCanvas.height=h;}const im=maskCtx.createImageData(w,h);const threshold=Number($('edge').value)/100;for(let i=0;i<data.length;i++){const alpha=Math.max(0,Math.min(1,(data[i]-threshold)/0.27));const o=i*4;im.data[o]=255;im.data[o+1]=255;im.data[o+2]=255;im.data[o+3]=Math.round(alpha*255);}maskCtx.putImageData(im,0,0);const fw=video.videoWidth,fh=video.videoHeight;if(foreground.width!==fw||foreground.height!==fh){foreground.width=fw;foreground.height=fh;}fgCtx.globalCompositeOperation='source-over';fgCtx.clearRect(0,0,fw,fh);fgCtx.drawImage(video,0,0,fw,fh);fgCtx.globalCompositeOperation='destination-in';fgCtx.drawImage(maskCanvas,0,0,fw,fh);fgCtx.globalCompositeOperation='source-over';S.frames++;drawPerson();if(S.frames%45===0)$('diagnostics').textContent=`AI green screen active\nProcessed frames: ${S.frames}\nVideo: ${fw}×${fh}\nMask: ${w}×${h}`;}finally{result.close();}});}catch(e){status('Segmentation error: '+e.message);console.error(e);S.ready=false;}}
+
+function loadClassicScript(src){
+ return new Promise((resolve,reject)=>{
+   const s=document.createElement('script');let done=false;
+   const timer=setTimeout(()=>finish(new Error('Timed out loading '+src)),20000);
+   function finish(err){if(done)return;done=true;clearTimeout(timer);if(err){s.remove();reject(err);}else resolve();}
+   s.src=src;s.async=true;s.crossOrigin='anonymous';
+   s.onload=()=>finish();s.onerror=()=>finish(new Error('Script failed to load: '+src));
+   document.head.appendChild(s);
+ });
+}
+async function loadSegmenterLibrary(){
+ if(typeof window.SelfieSegmentation==='function')return S.cdn||'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1';
+ const bases=[
+   'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1',
+   'https://unpkg.com/@mediapipe/selfie_segmentation@0.1'
+ ];
+ let error;
+ for(const base of bases){
+   try{
+     status('Loading classic MediaPipe script from '+new URL(base).hostname+'…');
+     await loadClassicScript(base+'/selfie_segmentation.js');
+     if(typeof window.SelfieSegmentation!=='function')throw Error('SelfieSegmentation global was not exposed');
+     S.cdn=base;return base;
+   }catch(e){error=e;console.warn('CDN failure',e);}
+ }
+ throw error||Error('All MediaPipe script sources failed');
+}
+function onSegmentationResults(result){
+ if(!S.working || !result?.segmentationMask)return;
+ const fw=video.videoWidth,fh=video.videoHeight;
+ if(!fw||!fh)return;
+ if(foreground.width!==fw||foreground.height!==fh){foreground.width=fw;foreground.height=fh;}
+ const mw=256,mh=Math.max(1,Math.round(256*fh/fw));
+ if(maskCanvas.width!==mw||maskCanvas.height!==mh){maskCanvas.width=mw;maskCanvas.height=mh;}
+ maskCtx.clearRect(0,0,mw,mh);
+ maskCtx.drawImage(result.segmentationMask,0,0,mw,mh);
+ const img=maskCtx.getImageData(0,0,mw,mh);
+ const d=img.data;
+ const threshold=Number($('edge').value)/100;
+ for(let i=0;i<d.length;i+=4){
+   const confidence=d[i]/255; // MediaPipe selfie segmentation encodes foreground in grayscale.
+   const alpha=Math.max(0,Math.min(1,(confidence-threshold)/0.22));
+   d[i]=255;d[i+1]=255;d[i+2]=255;d[i+3]=Math.round(alpha*255);
+ }
+ maskCtx.putImageData(img,0,0);
+ fgCtx.clearRect(0,0,fw,fh);
+ fgCtx.globalCompositeOperation='source-over';
+ fgCtx.drawImage(result.image||video,0,0,fw,fh);
+ fgCtx.globalCompositeOperation='destination-in';
+ fgCtx.drawImage(maskCanvas,0,0,fw,fh);
+ fgCtx.globalCompositeOperation='source-over';
+ S.frames++;
+ drawPerson();
+ if(S.frames%20===0)$('diagnostics').textContent=`Status: Green screen ACTIVE\nProcessed frames: ${S.frames}\nCamera: ${fw}×${fh}\nSegmentation: ${mw}×${mh}\nLibrary: ${S.cdn}`;
+}
+$('enable').onclick=async()=>{
+ const btn=$('enable');btn.disabled=true;
+ try{
+   if(!navigator.mediaDevices?.getUserMedia)throw Error('Camera API requires HTTPS and a supported Safari browser.');
+   status('Opening front camera…');
+   S.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{
+     facingMode:'user',width:{ideal:640},height:{ideal:480},frameRate:{ideal:20,max:30}
+   }});
+   video.srcObject=S.stream;await video.play();
+   $('tracking').textContent='Camera ON · loading segmentation';
+   const base=await loadSegmenterLibrary();
+   status('MediaPipe script loaded. Initializing segmentation model…');
+   S.segmenter=new window.SelfieSegmentation({locateFile:(f)=>base+'/'+f});
+   S.segmenter.setOptions({modelSelection:0});
+   S.segmenter.onResults(onSegmentationResults);
+   S.ready=true;S.working=true;S.busy=false;S.latestVideoTime=-1;S.lastInfer=0;S.frames=0;
+   $('tracking').textContent='Green screen starting…';
+   $('stop').disabled=false;btn.textContent='Camera active';
+   status('Camera + model ready. Processing first segmentation frames…');
+ }catch(err){
+   console.error(err);
+   S.working=false;S.ready=false;S.busy=false;
+   try{await S.segmenter?.close();}catch(e){}
+   S.segmenter=null;S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;video.srcObject=null;
+   btn.disabled=false;btn.textContent='Retry camera';$('stop').disabled=true;
+   $('tracking').textContent='Camera error';
+   status('ERROR '+(err.name||'Error')+': '+err.message+' — Camera permission was granted; check MediaPipe script/model loading.');
+ }
+};
+async function segment(now){
+ if(!S.ready||!S.segmenter||S.busy||video.readyState<2||!video.videoWidth)return;
+ if(now-S.lastInfer<115||video.currentTime===S.latestVideoTime)return;
+ S.lastInfer=now;S.latestVideoTime=video.currentTime;S.busy=true;
+ try{
+   await S.segmenter.send({image:video});
+   if(S.frames>0)$('tracking').textContent='Green screen ACTIVE';
+ }catch(e){
+   console.error(e);S.working=false;S.ready=false;
+   $('tracking').textContent='Model processing failed';
+   $('enable').disabled=false;$('enable').textContent='Retry camera';
+   status('Segmentation processing error: '+e.message);
+ }finally{S.busy=false;}
+}
 function drawPerson(){pctx.clearRect(0,0,960,540);if(!S.ready||!foreground.width)return;const scale=Number($('size').value)/100;const width=320*scale;const height=width*foreground.height/foreground.width;const x=960*Number($('x').value)/100-width/2;const bottom=540*Number($('y').value)/100;pctx.save();if($('mirror').checked){pctx.translate(x+width,0);pctx.scale(-1,1);pctx.drawImage(foreground,0,bottom-height,width,height);}else pctx.drawImage(foreground,x,bottom-height,width,height);pctx.restore();}
 function background(now){const t=now/1000;bctx.fillStyle='#8ad9ff';bctx.fillRect(0,0,960,540);const grad=bctx.createLinearGradient(0,0,0,540);grad.addColorStop(0,'#74cbff');grad.addColorStop(.73,'#c8f6ff');grad.addColorStop(.74,'#8ce169');grad.addColorStop(1,'#63bf55');bctx.fillStyle=grad;bctx.fillRect(0,0,960,540);bctx.fillStyle='#ffe16a';bctx.beginPath();bctx.arc(790,110,45,0,Math.PI*2);bctx.fill();for(let i=0;i<7;i++){let x=((i*180-t*33)%1260+1260)%1260-120;let y=85+i%3*34;bctx.fillStyle='#fff';for(let j=0;j<3;j++){bctx.beginPath();bctx.arc(x+j*26,y-(j%2)*9,25,0,Math.PI*2);bctx.fill();}}for(let i=0;i<9;i++){let x=i*145-((t*43)%145);bctx.fillStyle='#69c957';bctx.beginPath();bctx.ellipse(x,365,100,90,0,Math.PI,0);bctx.fill();}bctx.fillStyle='#657caa';bctx.beginPath();bctx.moveTo(340,290);bctx.lineTo(620,290);bctx.lineTo(955,540);bctx.lineTo(5,540);bctx.closePath();bctx.fill();bctx.strokeStyle='#fff9';bctx.lineWidth=6;bctx.setLineDash([22,26]);bctx.lineDashOffset=-t*160;bctx.beginPath();bctx.moveTo(480,290);bctx.lineTo(480,540);bctx.stroke();bctx.setLineDash([]);bctx.font='bold 28px system-ui';bctx.fillStyle='#173357';bctx.textAlign='center';bctx.fillText('RUN WITH THE VIDEO!',480,48);}
-function frame(now){if(S.source==='demo')background(now);if(S.working)segment(now);requestAnimationFrame(frame);}showSource('demo');requestAnimationFrame(frame);
+function frame(now){if(S.source==='demo')background(now);if(S.working)void segment(now);requestAnimationFrame(frame);}showSource('demo');requestAnimationFrame(frame);
 </script></body></html>
